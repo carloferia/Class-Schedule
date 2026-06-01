@@ -11,9 +11,13 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 COPY . .
 
+RUN mkdir -p bootstrap/cache storage/framework/sessions storage/framework/views storage/framework/cache storage/logs
+
 RUN composer install --optimize-autoloader --no-dev --no-interaction
 
 RUN touch database/teacher-schedule.sqlite
+
+RUN chmod -R 775 storage bootstrap/cache
 
 EXPOSE 8000
 
