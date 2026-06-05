@@ -12,7 +12,7 @@
             <label class="form-label">Teacher Name</label>
             <input type="text" name="name"
                    class="form-control @error('name') is-invalid @enderror"
-                   placeholder="Michael Maico"
+                   placeholder="Feria Carlo T."
                    value="{{ old('name') }}" required autofocus>
             @error('name')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -23,7 +23,7 @@
             <label class="form-label">Email Address</label>
             <input type="email" name="email"
                    class="form-control @error('email') is-invalid @enderror"
-                   placeholder="teacher@school.example"
+                   placeholder="feriacarlot@example.com"
                    value="{{ old('email') }}" required>
             @error('email')
                 <div class="invalid-feedback">{{ $message }}</div>

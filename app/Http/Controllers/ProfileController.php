@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Expense;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
@@ -27,7 +28,6 @@ class ProfileController extends Controller
             'name'            => ['required', 'string', 'max:255'],
             'email'           => ['required', 'email', 'unique:users,email,' . $user->id],
             'gender'          => ['nullable', 'in:Male,Female,Other'],
-            'address'         => ['nullable', 'string', 'max:255'],
             'password'        => ['nullable', 'confirmed', Password::min(8)],
             'profile_picture' => ['nullable', 'image', 'mimes:jpg,jpeg,png,gif', 'max:2048'],
         ]);
@@ -36,7 +36,6 @@ class ProfileController extends Controller
             'name'    => $request->name,
             'email'   => $request->email,
             'gender'  => $request->gender,
-            'address' => $request->address,
         ];
 
         // Handle password update
@@ -44,10 +43,22 @@ class ProfileController extends Controller
             $data['password'] = Hash::make($request->password);
         }
 
-        // Handle profile picture upload
         if ($request->hasFile('profile_picture')) {
-            $path = $request->file('profile_picture')->store('profile-pictures', 'public');
-            $data['profile_picture'] = $path;
+            $file = $request->file('profile_picture');
+            $directory = public_path('uploads/profile-pictures');
+
+            if (! File::isDirectory($directory)) {
+                File::makeDirectory($directory, 0755, true);
+            }
+
+            if ($user->profile_picture && str_starts_with($user->profile_picture, 'uploads/') && File::exists(public_path($user->profile_picture))) {
+                File::delete(public_path($user->profile_picture));
+            }
+
+            $filename = uniqid('profile_', true) . '.' . $file->getClientOriginalExtension();
+            $file->move($directory, $filename);
+
+            $data['profile_picture'] = 'uploads/profile-pictures/' . $filename;
         }
 
         $user->update($data);

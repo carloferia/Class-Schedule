@@ -15,7 +15,7 @@
 <div class="row g-3 mb-3">
     <div class="col-6 col-lg-3">
         <div class="card-simple p-3">
-            <div class="text-muted small">Total</div>
+            <div class="text-muted small">Total Schedules</div>
             <div class="fs-4 fw-bold">{{ $totalSchedules }}</div>
         </div>
     </div>
@@ -33,13 +33,27 @@
     </div>
     <div class="col-6 col-lg-3">
         <div class="card-simple p-3">
-            <div class="text-muted small">Absent</div>
-            <div class="fs-4 fw-bold text-danger">{{ $absentCount }}</div>
+            <div class="text-muted small">Users</div>
+            <div class="fs-4 fw-bold text-primary">{{ $totalUsers }}</div>
         </div>
     </div>
 </div>
 
 <div class="row g-3">
+    <div class="col-12 col-lg-5">
+        <div class="card-simple p-3">
+            <div class="card-header-simple px-0 pt-0">Status Report</div>
+            <canvas id="statusChart" height="220"></canvas>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-7">
+        <div class="card-simple p-3">
+            <div class="card-header-simple px-0 pt-0">Schedule Summary</div>
+            <canvas id="summaryChart" height="220"></canvas>
+        </div>
+    </div>
+
     <div class="col-12 col-lg-5">
         <div class="card-simple">
             <div class="card-header-simple">Today - {{ $todayName }}</div>
@@ -105,3 +119,42 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+const statusData = [{{ $scheduledCount }}, {{ $rescheduledCount }}, {{ $absentCount }}];
+
+new Chart(document.getElementById('statusChart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Scheduled', 'Rescheduled', 'Teacher Absent'],
+        datasets: [{
+            data: statusData,
+            backgroundColor: ['#198754', '#ffc107', '#dc3545']
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } }
+    }
+});
+
+new Chart(document.getElementById('summaryChart'), {
+    type: 'bar',
+    data: {
+        labels: ['Users', 'Total Schedules', 'Scheduled', 'Rescheduled'],
+        datasets: [{
+            label: 'Records',
+            data: [{{ $totalUsers }}, {{ $totalSchedules }}, {{ $scheduledCount }}, {{ $rescheduledCount }}],
+            backgroundColor: ['#0d6efd', '#6f42c1', '#198754', '#ffc107']
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+        plugins: { legend: { display: false } }
+    }
+});
+</script>
+@endpush

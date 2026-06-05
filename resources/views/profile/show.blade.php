@@ -3,6 +3,15 @@
 
 @section('content')
 
+@php
+    $profilePictureUrl = null;
+    if ($user->profile_picture) {
+        $profilePictureUrl = str_starts_with($user->profile_picture, 'uploads/')
+            ? asset($user->profile_picture)
+            : asset('storage/' . $user->profile_picture);
+    }
+@endphp
+
 <div class="row g-4">
     <div class="col-12 col-lg-4">
         <div class="vcard">
@@ -11,8 +20,8 @@
             </div>
             <div class="vcard-body text-center py-4">
                 <div class="mb-3 mx-auto" style="position:relative;width:92px;">
-                    @if($user->profile_picture)
-                        <img src="{{ asset('storage/' . $user->profile_picture) }}"
+                    @if($profilePictureUrl)
+                        <img src="{{ $profilePictureUrl }}"
                              id="profilePreview"
                              style="width:92px;height:92px;object-fit:cover;border-radius:50%;border:3px solid var(--val-red);"
                              alt="Teacher">
@@ -49,7 +58,6 @@
                     @foreach([
                         ['bi-calendar3', 'Joined', $user->created_at->format('M d, Y')],
                         ['bi-gender-ambiguous', 'Gender', $user->gender ?? '-'],
-                        ['bi-geo-alt', 'Department', $user->address ?? '-'],
                     ] as [$icon, $label, $val])
                     <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem;font-size:.82rem;">
                         <i class="bi {{ $icon }}" style="color:var(--val-red);width:14px;"></i>
@@ -116,11 +124,6 @@
                                     <option value="{{ $g }}" {{ old('gender', $user->gender) == $g ? 'selected' : '' }}>{{ $g }}</option>
                                 @endforeach
                             </select>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <label class="form-label">Department / Section</label>
-                            <input type="text" name="address" class="form-control"
-                                   value="{{ old('address', $user->address) }}" placeholder="BSIT 1-A">
                         </div>
 
                         <div class="col-12">

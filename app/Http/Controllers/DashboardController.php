@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Expense;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -14,6 +15,7 @@ class DashboardController extends Controller
         $base = Expense::where('user_id', $userId)->whereNotNull('day_of_week');
 
         $totalSchedules = (clone $base)->count();
+        $totalUsers = User::count();
         $scheduledCount = (clone $base)->where('status', 'Scheduled')->count();
         $rescheduledCount = (clone $base)->where('status', 'Rescheduled')->count();
         $absentCount = (clone $base)->where('status', 'Teacher Absent')->count();
@@ -32,6 +34,7 @@ class DashboardController extends Controller
 
         return view('dashboard.index', compact(
             'totalSchedules',
+            'totalUsers',
             'scheduledCount',
             'rescheduledCount',
             'absentCount',
