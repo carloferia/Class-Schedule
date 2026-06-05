@@ -39,88 +39,62 @@
     </div>
 </div>
 
-<div class="row g-3">
+<div class="row g-3 dashboard-charts">
     <div class="col-12 col-lg-5">
         <div class="card-simple p-3">
             <div class="card-header-simple px-0 pt-0">Status Report</div>
-            <canvas id="statusChart" height="220"></canvas>
+            <div class="chart-box">
+                <canvas id="statusChart"></canvas>
+            </div>
         </div>
     </div>
 
     <div class="col-12 col-lg-7">
         <div class="card-simple p-3">
             <div class="card-header-simple px-0 pt-0">Schedule Summary</div>
-            <canvas id="summaryChart" height="220"></canvas>
-        </div>
-    </div>
-
-    <div class="col-12 col-lg-5">
-        <div class="card-simple">
-            <div class="card-header-simple">Today - {{ $todayName }}</div>
-            <div class="table-responsive">
-                <table class="table mb-0 align-middle">
-                    <thead>
-                        <tr>
-                            <th>Subject</th>
-                            <th>Section</th>
-                            <th>Time</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($todaySchedules as $schedule)
-                            <tr>
-                                <td>{{ $schedule->description }}</td>
-                                <td>{{ $schedule->section }}</td>
-                                <td>{{ \Illuminate\Support\Carbon::parse($schedule->start_time)->format('g:i A') }}</td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="3" class="text-center text-muted py-4">No classes today.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
+            <div class="chart-box">
+                <canvas id="summaryChart"></canvas>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="col-12 col-lg-7">
-        <div class="card-simple">
-            <div class="card-header-simple">
-                <span>Upcoming Schedule</span>
-                <a href="{{ route('expenses.index') }}" class="btn-light-line btn-sm">View All</a>
-            </div>
-            <div class="table-responsive">
-                <table class="table mb-0 align-middle">
-                    <thead>
-                        <tr>
-                            <th>Subject</th>
-                            <th>Section</th>
-                            <th>Room</th>
-                            <th>Day</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($nextSchedules as $schedule)
-                            @php $statusClass = 'status-' . str_replace(' ', '-', strtolower($schedule->status ?? 'Scheduled')); @endphp
-                            <tr>
-                                <td>{{ $schedule->description }}</td>
-                                <td>{{ $schedule->section }}</td>
-                                <td>{{ $schedule->room }}</td>
-                                <td>{{ $schedule->day_of_week }}</td>
-                                <td><span class="badge-status {{ $statusClass }}">{{ $schedule->status ?? 'Scheduled' }}</span></td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="5" class="text-center text-muted py-4">No schedules yet.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+<div class="mt-3">
+    <div class="card-simple p-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="fw-bold">Upcoming Schedule</div>
+            <a href="{{ route('expenses.index') }}" class="btn btn-outline-primary btn-sm">View All</a>
         </div>
     </div>
 </div>
 @endsection
 
 @push('scripts')
+<style>
+    .dashboard-charts .card-simple {
+        min-height: 270px;
+    }
+
+    .chart-box {
+        height: 215px;
+        position: relative;
+    }
+
+    @media (max-height: 850px) {
+        .content {
+            padding-top: 18px;
+            padding-bottom: 12px;
+        }
+
+        .dashboard-charts .card-simple {
+            min-height: 235px;
+        }
+
+        .chart-box {
+            height: 180px;
+        }
+    }
+</style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
 const statusData = [{{ $scheduledCount }}, {{ $rescheduledCount }}, {{ $absentCount }}];
@@ -136,6 +110,7 @@ new Chart(document.getElementById('statusChart'), {
     },
     options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: { legend: { position: 'bottom' } }
     }
 });
@@ -152,6 +127,7 @@ new Chart(document.getElementById('summaryChart'), {
     },
     options: {
         responsive: true,
+        maintainAspectRatio: false,
         scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
         plugins: { legend: { display: false } }
     }

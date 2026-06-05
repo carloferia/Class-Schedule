@@ -12,15 +12,12 @@ class ScheduleSeeder extends Seeder
     public function run(): void
     {
         $teachers = [
+            ['test123123', 'test@gmail.com', 'Other', 'Teacher'],
             ['Michael Maico', 'michael.maico@school.test', 'Male', 'Teacher'],
             ['Obet Satore', 'obet.satore@school.test', 'Male', 'Teacher'],
             ['Carl Cymon De Vera', 'carl.devera@school.test', 'Male', 'Teacher'],
             ['Adrian Feria', 'adrian.feria@school.test', 'Male', 'Teacher'],
         ];
-
-        $allowedEmails = collect($teachers)->pluck(1)->all();
-
-        User::whereNotIn('email', $allowedEmails)->delete();
 
         $schedule = [
             ['Rizal', 'BSIT 2-F', 'Room 104', 'Monday', '08:00', '09:30', 'Scheduled', 'Bring Rizal book'],
